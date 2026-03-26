@@ -1,0 +1,13 @@
+# Java compiled output
+java/out/
+
+# macOS metadata
+.DS_Store
+
+# Editor / IDE directories
+.idea/
+.vscode/settings.json
+*.iml
+
+# Node modules (if ever added to web/)
+node_modules/

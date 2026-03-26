@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!--
+  index.html  –  Fruit Collector Web Game
+  ========================================
+  A browser-based fruit-collecting game.
+  No build step required – open this file directly in any modern browser!
+
+  Educational notes:
+    - The HTML file defines the page *structure* (what elements exist).
+    - style.css  defines the *appearance* (colours, layout, animations).
+    - game.js    defines the *behaviour*  (logic, timers, click handling).
+
+  Keeping these three concerns separate is the foundation of front-end
+  web development (HTML / CSS / JavaScript).
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Responsive: tells mobile browsers to use the device's natural width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍓 Fruit Collector Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ── Page Header ──────────────────────────────────────────────────── -->
+    <header>
+        <h1>🍓 Fruit Collector 🍎</h1>
+        <p>Find the demanded fruit before time runs out!</p>
+    </header>
+
+    <!-- ── Main wrapper ─────────────────────────────────────────────────── -->
+    <main id="game-container">
+
+        <!-- ════════════════════════════════════════════════════════════════
+             START SCREEN
+             Shown before the game begins.  Player picks a duration.
+        ════════════════════════════════════════════════════════════════ -->
+        <section id="start-screen">
+            <h2>How to Play</h2>
+            <p>
+                A <strong>demand</strong> is shown telling you which fruit to
+                collect.  Six fruits appear in the market below.  Click the
+                correct one to earn points!<br><br>
+                Rarer fruits earn more points — but appear less often.
+                Wrong picks cost <strong>-1 point</strong>.
+            </p>
+
+            <!-- Rarity legend so players know what to expect -->
+            <div id="rarity-legend">
+                <span class="legend-item"><span>⭐</span> Common = 1 pt</span>
+                <span class="legend-item"><span>🟢</span> Uncommon = 3 pts</span>
+                <span class="legend-item"><span>🔵</span> Rare = 5 pts</span>
+                <span class="legend-item"><span>💎</span> Legendary = 10 pts</span>
+            </div>
+
+            <!-- Duration selection -->
+            <p style="margin-top:20px; margin-bottom:8px; font-weight:600;">
+                Choose game duration:
+            </p>
+            <div id="duration-options">
+                <!-- data-seconds is read by game.js when a button is clicked -->
+                <button class="duration-btn" data-seconds="30">30 sec</button>
+                <button class="duration-btn" data-seconds="60">1 min</button>
+                <button class="duration-btn" data-seconds="90">90 sec</button>
+                <button class="duration-btn" data-seconds="120">2 min</button>
+                <button class="duration-btn" data-seconds="180">3 min</button>
+                <button class="duration-btn" data-seconds="300">5 min</button>
+            </div>
+
+            <button id="start-btn">🍀 Start Game</button>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════════════
+             GAME SCREEN
+             Hidden until a game is in progress.
+        ════════════════════════════════════════════════════════════════ -->
+        <section id="game-screen" class="hidden">
+
+            <!-- Timer progress bar (full width, shrinks as time passes) -->
+            <div id="timer-bar-container">
+                <div id="timer-bar"></div>
+            </div>
+
+            <!-- Status bar: time remaining, score, demands completed -->
+            <div id="status-bar">
+                <span id="timer-display">⏱ 01:00</span>
+                <span id="score-display">💎 0 pts</span>
+                <span id="demands-display">✅ 0 done</span>
+            </div>
+
+            <!-- Demand panel: tells the player which fruit to collect -->
+            <div id="demand-panel">
+                <div id="demand-label">📋 Current Demand</div>
+                <div id="demand-text">Loading…</div>
+                <div id="demand-progress"></div>
+            </div>
+
+            <!-- Market grid: 6 fruit cards the player clicks to collect -->
+            <!--
+                Educational note:
+                  This div starts empty.  game.js fills it dynamically using
+                  document.createElement() so the cards can change each round.
+            -->
+            <div id="market-grid"></div>
+
+            <!-- Feedback bar: shows "✅ +3 pts!" or "❌ That's a Lemon!" -->
+            <div id="feedback-bar"></div>
+
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════════════
+             GAME OVER SCREEN
+             Shown when the timer reaches zero.
+        ════════════════════════════════════════════════════════════════ -->
+        <section id="game-over-screen" class="hidden">
+            <h2>⏱ Time's Up!</h2>
+            <div id="final-score">0 pts</div>
+            <div id="final-demands">Demands completed: 0</div>
+            <div id="final-rating">🌱 Keep Practising!</div>
+            <button id="play-again-btn">🔄 Play Again</button>
+        </section>
+
+    </main>
+
+    <!-- Load game logic AFTER the DOM is fully parsed (no defer needed
+         because the script is at the bottom of the body). -->
+    <script src="game.js"></script>
+</body>
+</html>
