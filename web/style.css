@@ -1,0 +1,357 @@
+/* ============================================================
+   style.css – Fruit Collector Web Game
+   ============================================================
+   Educational note:
+     CSS variables (--variable-name) let you define colours once
+     at the :root level and reuse them everywhere.  Change a colour
+     here and it updates across the whole page automatically.
+   ============================================================ */
+
+/* ── CSS Variables (Design Tokens) ────────────────────────── */
+:root {
+    --bg-main:       #1a1a2e;   /* Deep navy background             */
+    --bg-panel:      #16213e;   /* Slightly lighter panel background */
+    --bg-card:       #0f3460;   /* Card / market slot background     */
+    --bg-card-hover: #1a4a7a;   /* Card background on hover          */
+    --accent-gold:   #f5c518;   /* Gold for titles and score         */
+    --accent-green:  #56cc9d;   /* Correct-answer feedback           */
+    --accent-red:    #e74c3c;   /* Wrong-answer feedback             */
+    --accent-blue:   #3498db;   /* Timer bar and UI elements         */
+    --text-main:     #e0e0e0;   /* Body text                         */
+    --text-dim:      #a0a0b0;   /* Secondary / dimmed text           */
+    --rarity-common:    #aaaaaa;
+    --rarity-uncommon:  #56cc9d;
+    --rarity-rare:      #3498db;
+    --rarity-legendary: #f5c518;
+    --border-radius: 12px;
+    --transition:    0.2s ease;
+}
+
+/* ── Reset / Base ──────────────────────────────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+/* ── Header / Title ────────────────────────────────────────── */
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: 2.2rem;
+    color: var(--accent-gold);
+    text-shadow: 0 0 20px rgba(245, 197, 24, 0.4);
+    letter-spacing: 2px;
+}
+
+header p {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    margin-top: 4px;
+}
+
+/* ── Main Game Container ───────────────────────────────────── */
+#game-container {
+    width: 100%;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ── Status Bar (timer + score) ────────────────────────────── */
+#status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-panel);
+    border-radius: var(--border-radius);
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    gap: 12px;
+}
+
+#score-display { color: var(--accent-gold); }
+#timer-display { color: var(--accent-blue); font-variant-numeric: tabular-nums; }
+#demands-display { color: var(--accent-green); }
+
+/* ── Timer Progress Bar ────────────────────────────────────── */
+#timer-bar-container {
+    width: 100%;
+    height: 8px;
+    background: #333;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+#timer-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-blue), #74b9ff);
+    border-radius: 4px;
+    transition: width 1s linear, background-color 0.5s;
+    /* JavaScript updates the width each second */
+}
+
+/* When < 20% time remains, turn the bar red */
+#timer-bar.urgent {
+    background: linear-gradient(90deg, var(--accent-red), #ff7675);
+}
+
+/* ── Demand Panel ──────────────────────────────────────────── */
+#demand-panel {
+    background: var(--bg-panel);
+    border-radius: var(--border-radius);
+    padding: 16px 20px;
+    text-align: center;
+    border: 2px solid transparent;
+    transition: border-color var(--transition);
+}
+
+/* Pulse animation when a new demand appears */
+#demand-panel.pulse {
+    animation: demandPulse 0.5s ease;
+}
+
+@keyframes demandPulse {
+    0%   { transform: scale(1);    border-color: transparent; }
+    40%  { transform: scale(1.02); border-color: var(--accent-gold); }
+    100% { transform: scale(1);    border-color: transparent; }
+}
+
+#demand-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+}
+
+#demand-text {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+#demand-progress {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+}
+
+/* ── Market Grid ───────────────────────────────────────────── */
+#market-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);  /* 3 columns, 2 rows = 6 cards */
+    gap: 12px;
+}
+
+/* Individual fruit card */
+.fruit-card {
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    padding: 20px 10px;
+    text-align: center;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: transform var(--transition),
+                background var(--transition),
+                border-color var(--transition),
+                box-shadow var(--transition);
+    user-select: none;       /* prevent text highlighting on rapid clicks */
+}
+
+.fruit-card:hover {
+    background: var(--bg-card-hover);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.fruit-card:active {
+    transform: translateY(0) scale(0.96);
+}
+
+/* Rarity border colours */
+.fruit-card[data-rarity="COMMON"]    { border-color: rgba(170,170,170,0.25); }
+.fruit-card[data-rarity="UNCOMMON"]  { border-color: rgba(86,204,157,0.35); }
+.fruit-card[data-rarity="RARE"]      { border-color: rgba(52,152,219,0.45); }
+.fruit-card[data-rarity="LEGENDARY"] {
+    border-color: rgba(245,197,24,0.6);
+    box-shadow: 0 0 12px rgba(245,197,24,0.2);
+}
+
+.fruit-emoji { font-size: 2.8rem; line-height: 1.2; }
+.fruit-name  { font-size: 0.85rem; margin-top: 6px; font-weight: 600; color: var(--text-main); }
+.fruit-rarity-badge {
+    font-size: 0.7rem;
+    margin-top: 4px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.fruit-rarity-badge.COMMON    { color: var(--rarity-common);    }
+.fruit-rarity-badge.UNCOMMON  { color: var(--rarity-uncommon);  }
+.fruit-rarity-badge.RARE      { color: var(--rarity-rare);      }
+.fruit-rarity-badge.LEGENDARY { color: var(--rarity-legendary); }
+
+/* Flash animations for correct / wrong clicks */
+.fruit-card.flash-correct {
+    animation: flashCorrect 0.35s ease;
+}
+.fruit-card.flash-wrong {
+    animation: flashWrong 0.35s ease;
+}
+
+@keyframes flashCorrect {
+    0%   { background: var(--bg-card);    border-color: var(--accent-green); }
+    50%  { background: rgba(86,204,157,0.3); }
+    100% { background: var(--bg-card);    border-color: transparent; }
+}
+
+@keyframes flashWrong {
+    0%   { background: var(--bg-card);    border-color: var(--accent-red); }
+    50%  { background: rgba(231,76,60,0.3); }
+    100% { background: var(--bg-card);    border-color: transparent; }
+}
+
+/* ── Feedback Bar ──────────────────────────────────────────── */
+#feedback-bar {
+    min-height: 36px;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 6px;
+    border-radius: 8px;
+    transition: opacity 0.3s;
+}
+#feedback-bar.correct { color: var(--accent-green); }
+#feedback-bar.wrong   { color: var(--accent-red); }
+
+/* ── Start Screen ──────────────────────────────────────────── */
+#start-screen {
+    background: var(--bg-panel);
+    border-radius: var(--border-radius);
+    padding: 30px;
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+}
+
+#start-screen h2 { font-size: 1.5rem; color: var(--accent-gold); margin-bottom: 12px; }
+#start-screen p  { color: var(--text-dim); margin-bottom: 20px; line-height: 1.6; }
+
+/* Duration options */
+#duration-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.duration-btn {
+    background: var(--bg-card);
+    color: var(--text-main);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all var(--transition);
+    font-family: inherit;
+}
+
+.duration-btn:hover         { border-color: var(--accent-blue); }
+.duration-btn.selected      { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(245,197,24,0.1); }
+
+#start-btn {
+    background: var(--accent-gold);
+    color: #1a1a2e;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 40px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: transform var(--transition), box-shadow var(--transition);
+    font-family: inherit;
+}
+
+#start-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(245,197,24,0.4);
+}
+
+/* ── Game Over Screen ──────────────────────────────────────── */
+#game-over-screen {
+    background: var(--bg-panel);
+    border-radius: var(--border-radius);
+    padding: 30px;
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+}
+
+#game-over-screen h2 { font-size: 1.8rem; color: var(--accent-red); margin-bottom: 16px; }
+
+#final-score    { font-size: 3rem; color: var(--accent-gold); font-weight: 700; margin: 12px 0; }
+#final-demands  { font-size: 1rem; color: var(--text-dim); margin-bottom: 8px; }
+#final-rating   { font-size: 1.3rem; font-weight: 600; margin-bottom: 24px; }
+
+#play-again-btn {
+    background: var(--accent-green);
+    color: #0f3460;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 40px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: transform var(--transition), box-shadow var(--transition);
+    font-family: inherit;
+}
+
+#play-again-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(86,204,157,0.4);
+}
+
+/* ── Rarity Legend ─────────────────────────────────────────── */
+#rarity-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    padding: 8px;
+}
+
+.legend-item span:first-child { margin-right: 4px; }
+
+/* ── Utility: hidden class ─────────────────────────────────── */
+.hidden { display: none !important; }
+
+/* ── Responsive (narrow screens) ──────────────────────────── */
+@media (max-width: 500px) {
+    header h1 { font-size: 1.6rem; }
+    #market-grid { grid-template-columns: repeat(2, 1fr); }
+    .fruit-emoji { font-size: 2.2rem; }
+    #demand-text { font-size: 1.3rem; }
+}
